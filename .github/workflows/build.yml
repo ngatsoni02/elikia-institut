@@ -6,6 +6,10 @@ on:
     tags: ['v*']
   workflow_dispatch:
 
+env:
+  CSC_IDENTITY_AUTO_DISCOVERY: "false"
+  DEBUG: "electron-builder"
+
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -15,21 +19,22 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
 
       - name: Install dependencies
         run: npm install
 
       - name: Build Windows installer
+        run: npx electron-builder --win --x64
         env:
-          CSC_IDENTITY_AUTO_DISCOVERY: "false"
-        run: npm run build:win
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Windows installer
         uses: actions/upload-artifact@v4
         with:
           name: ELIKIA-INSTITUT-Windows
-          path: dist/*.exe
+          path: |
+            dist/*.exe
           retention-days: 30
 
   build-mac:
@@ -40,15 +45,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
 
       - name: Install dependencies
         run: npm install
 
       - name: Build macOS DMG
+        run: npx electron-builder --mac --x64
         env:
-          CSC_IDENTITY_AUTO_DISCOVERY: "false"
-        run: npm run build:mac
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload macOS DMG
         uses: actions/upload-artifact@v4
@@ -56,7 +61,6 @@ jobs:
           name: ELIKIA-INSTITUT-macOS
           path: |
             dist/*.dmg
-            dist/*.zip
           retention-days: 30
 
   build-linux:
@@ -67,13 +71,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
 
       - name: Install dependencies
         run: npm install
 
       - name: Build Linux packages
-        run: npm run build:linux
+        run: npx electron-builder --linux --x64
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Linux packages
         uses: actions/upload-artifact@v4
