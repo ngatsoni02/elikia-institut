@@ -37,14 +37,8 @@
       "assets/**/*"
     ],
     "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": ["x64"]
-        }
-      ],
-      "signAndEditExecutable": false,
-      "sign": null
+      "target": "nsis",
+      "signAndEditExecutable": false
     },
     "nsis": {
       "oneClick": false,
@@ -54,25 +48,12 @@
       "shortcutName": "ELIKIA INSTITUT"
     },
     "mac": {
-      "target": [
-        {
-          "target": "dmg",
-          "arch": ["x64", "arm64"]
-        }
-      ],
-      "category": "public.app-category.education"
+      "target": "dmg",
+      "category": "public.app-category.education",
+      "identity": null
     },
     "linux": {
-      "target": [
-        {
-          "target": "AppImage",
-          "arch": ["x64"]
-        },
-        {
-          "target": "deb",
-          "arch": ["x64"]
-        }
-      ],
+      "target": ["AppImage", "deb"],
       "category": "Education"
     }
   }
