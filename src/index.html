@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: local-file: file:; media-src 'self' local-file: file: blob:;">
+  <title>ELIKIA INSTITUT - Bibliothèque Numérique</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ═══════ CUSTOM TITLEBAR ═══════ -->
+  <div id="titlebar">
+    <div class="titlebar-drag">
+      <div class="titlebar-logo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          <path d="M12 6v7l3-2 3 2V6"/>
+        </svg>
+        <span id="titlebar-app-name">ELIKIA INSTITUT</span>
+      </div>
+    </div>
+    <div class="titlebar-controls" id="titlebar-controls">
+      <button onclick="handleWindowMinimize()" class="titlebar-btn kiosk-hideable" id="btn-minimize" title="Réduire">
+        <svg width="12" height="12" viewBox="0 0 12 12"><rect y="5" width="12" height="1.5" fill="currentColor"/></svg>
+      </button>
+      <button onclick="handleWindowMaximize()" class="titlebar-btn kiosk-hideable" id="btn-maximize" title="Agrandir">
+        <svg width="12" height="12" viewBox="0 0 12 12"><rect x="1" y="1" width="10" height="10" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+      </button>
+      <button onclick="handleWindowClose()" class="titlebar-btn titlebar-close" id="btn-close" title="Fermer">
+        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════ LOGIN SCREEN ═══════ -->
+  <div id="login-screen" class="screen active">
+    <div class="login-container">
+      <div class="login-left">
+        <div class="login-brand">
+          <div class="login-brand-icon" id="login-logo-container">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              <path d="M12 6v7l3-2 3 2V6"/>
+            </svg>
+          </div>
+          <h1 id="login-institute-name">Institut Supérieur Biblique</h1>
+          <p class="login-subtitle">Bibliothèque Numérique</p>
+          <div class="login-verse" id="login-custom-message">
+            <em>"Ta parole est une lampe à mes pieds et une lumière sur mon sentier."</em>
+            <span>— Psaume 119:105</span>
+          </div>
+        </div>
+        <div class="login-software-badge">
+          <span class="elikia-system">ELIKIA INSTITUT</span>
+        </div>
+      </div>
+      <div class="login-right">
+        <div class="login-form-container">
+          <h2>Connexion</h2>
+          <p class="login-hint">Connectez-vous à votre session</p>
+          <form id="login-form" onsubmit="return handleLogin(event)">
+            <div class="form-group">
+              <label for="login-username">Nom d'utilisateur</label>
+              <div class="input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <input type="text" id="login-username" placeholder="Entrez votre identifiant" required autocomplete="off">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="login-password">Mot de passe</label>
+              <div class="input-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <input type="password" id="login-password" placeholder="Entrez votre mot de passe" required>
+                <button type="button" class="password-toggle" onclick="togglePasswordVisibility('login-password', this)" style="right:8px;position:absolute;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;padding:4px;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+            <div id="login-error" class="form-error" style="display:none"></div>
+            <button type="submit" class="btn btn-primary btn-block">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+              Se connecter
+            </button>
+          </form>
+          <div class="login-footer">
+            <small>Admin par défaut: <b>admin</b> / <b>admin2024</b></small>
+          </div>
+          <div class="login-creator">
+            Créé par <strong>ELIKIA MEDIA</strong> BY <strong>PRINCE NGATSONI</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ MAIN APP ═══════ -->
+  <div id="app-screen" class="screen">
+    <div class="app-layout">
+
+      <!-- SIDEBAR -->
+      <aside id="sidebar">
+        <div class="sidebar-header">
+          <div class="user-avatar" id="user-avatar">AD</div>
+          <div class="user-info">
+            <span class="user-name" id="user-display-name">Admin</span>
+            <span class="user-role" id="user-display-role">Administrateur</span>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <div class="nav-section">
+            <span class="nav-section-title">PRINCIPAL</span>
+            <a href="#" class="nav-item active" data-page="dashboard">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              <span>Tableau de Bord</span>
+            </a>
+            <a href="#" class="nav-item" data-page="books">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              <span>Bibliothèque</span>
+            </a>
+            <a href="#" class="nav-item" data-page="videos">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+              <span>Vidéothèque</span>
+            </a>
+            <a href="#" class="nav-item" data-page="bookmarks">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              <span>Favoris</span>
+            </a>
+            <a href="#" class="nav-item" data-page="my-progress">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              <span>Ma Progression</span>
+            </a>
+            <a href="#" class="nav-item" data-page="applications">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              <span>Applications</span>
+            </a>
+          </div>
+
+          <div class="nav-section admin-only">
+            <span class="nav-section-title">ADMINISTRATION</span>
+            <a href="#" class="nav-item" data-page="manage-books">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              <span>Gérer les Livres</span>
+            </a>
+            <a href="#" class="nav-item" data-page="manage-videos">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              <span>Gérer les Vidéos</span>
+            </a>
+            <a href="#" class="nav-item" data-page="manage-users">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span>Gérer les Utilisateurs</span>
+            </a>
+            <a href="#" class="nav-item" data-page="manage-categories">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <span>Catégories</span>
+            </a>
+            <a href="#" class="nav-item" data-page="backup-restore">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>Sauvegarde</span>
+            </a>
+            <a href="#" class="nav-item" data-page="settings">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>Paramètres</span>
+            </a>
+            <a href="#" class="nav-item" data-page="manage-apps">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M17.5 14v7M14 17.5h7"/></svg>
+              <span>Gérer les Applications</span>
+            </a>
+          </div>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button onclick="handleLogout()" class="btn-logout">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span>Déconnexion</span>
+          </button>
+          <div class="sidebar-credit">
+            <span class="credit-system">ELIKIA INSTITUT</span>
+            <span class="credit-author">par ELIKIA MEDIA — Prince Ngatsoni</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main id="main-content">
+
+        <!-- ═══ DASHBOARD ═══ -->
+        <div class="page active" id="page-dashboard">
+          <div class="page-header">
+            <h2>Tableau de Bord</h2>
+            <p class="page-subtitle" id="welcome-message">Bienvenue !</p>
+          </div>
+          <div class="stats-grid" id="dashboard-stats">
+            <div class="stat-card stat-books">
+              <div class="stat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+              <div class="stat-info"><span class="stat-number" id="stat-books">0</span><span class="stat-label">Livres</span></div>
+            </div>
+            <div class="stat-card stat-videos">
+              <div class="stat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg></div>
+              <div class="stat-info"><span class="stat-number" id="stat-videos">0</span><span class="stat-label">Vidéos</span></div>
+            </div>
+            <div class="stat-card stat-users">
+              <div class="stat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+              <div class="stat-info"><span class="stat-number" id="stat-users">0</span><span class="stat-label">Étudiants</span></div>
+            </div>
+            <div class="stat-card stat-categories">
+              <div class="stat-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+              <div class="stat-info"><span class="stat-number" id="stat-categories">0</span><span class="stat-label">Catégories</span></div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="dashboard-section">
+              <h3>Derniers Livres Ajoutés</h3>
+              <div class="items-list" id="recent-books-list"><p class="empty-state">Aucun livre ajouté</p></div>
+            </div>
+            <div class="dashboard-section">
+              <h3>Dernières Vidéos Ajoutées</h3>
+              <div class="items-list" id="recent-videos-list"><p class="empty-state">Aucune vidéo ajoutée</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ BOOKS LIBRARY ═══ -->
+        <div class="page" id="page-books">
+          <div class="page-header">
+            <h2>Bibliothèque</h2>
+            <div class="page-actions">
+              <div class="search-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="books-search" placeholder="Rechercher un livre..." oninput="filterBooks()">
+              </div>
+              <div class="thumb-size-selector">
+                <button class="thumb-size-btn" data-size="small" onclick="setThumbnailSize('books', 'small', this)" title="Petit">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="3" height="3" rx="0.5"/><rect x="6" y="1" width="3" height="3" rx="0.5"/><rect x="11" y="1" width="3" height="3" rx="0.5"/><rect x="1" y="6" width="3" height="3" rx="0.5"/><rect x="6" y="6" width="3" height="3" rx="0.5"/><rect x="11" y="6" width="3" height="3" rx="0.5"/><rect x="1" y="11" width="3" height="3" rx="0.5"/><rect x="6" y="11" width="3" height="3" rx="0.5"/><rect x="11" y="11" width="3" height="3" rx="0.5"/></svg>
+                </button>
+                <button class="thumb-size-btn active" data-size="medium" onclick="setThumbnailSize('books', 'medium', this)" title="Moyen">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="0.5"/><rect x="9" y="1" width="6" height="6" rx="0.5"/><rect x="1" y="9" width="6" height="6" rx="0.5"/><rect x="9" y="9" width="6" height="6" rx="0.5"/></svg>
+                </button>
+                <button class="thumb-size-btn" data-size="large" onclick="setThumbnailSize('books', 'large', this)" title="Grand">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6.5" height="14" rx="0.5"/><rect x="8.5" y="1" width="6.5" height="14" rx="0.5"/></svg>
+                </button>
+                <button class="thumb-size-btn" data-size="xlarge" onclick="setThumbnailSize('books', 'xlarge', this)" title="Très grand">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="14" height="14" rx="1"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="content-with-filter">
+            <div class="filter-sidebar" id="book-categories-filter">
+              <h4>Catégories</h4>
+              <a href="#" class="filter-item active" data-cat="all" onclick="filterBooksByCategory('all', this)">
+                <span class="filter-dot" style="background:#64748B"></span> Toutes
+              </a>
+            </div>
+            <div class="content-grid" id="books-grid">
+              <p class="empty-state">Chargement...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ VIDEOS LIBRARY ═══ -->
+        <div class="page" id="page-videos">
+          <div class="page-header">
+            <h2>Vidéothèque</h2>
+            <div class="page-actions">
+              <div class="search-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="videos-search" placeholder="Rechercher une vidéo..." oninput="filterVideos()">
+              </div>
+              <div class="thumb-size-selector">
+                <button class="thumb-size-btn" data-size="small" onclick="setThumbnailSize('videos', 'small', this)" title="Petit">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="3" height="3" rx="0.5"/><rect x="6" y="1" width="3" height="3" rx="0.5"/><rect x="11" y="1" width="3" height="3" rx="0.5"/><rect x="1" y="6" width="3" height="3" rx="0.5"/><rect x="6" y="6" width="3" height="3" rx="0.5"/><rect x="11" y="6" width="3" height="3" rx="0.5"/><rect x="1" y="11" width="3" height="3" rx="0.5"/><rect x="6" y="11" width="3" height="3" rx="0.5"/><rect x="11" y="11" width="3" height="3" rx="0.5"/></svg>
+                </button>
+                <button class="thumb-size-btn active" data-size="medium" onclick="setThumbnailSize('videos', 'medium', this)" title="Moyen">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="0.5"/><rect x="9" y="1" width="6" height="6" rx="0.5"/><rect x="1" y="9" width="6" height="6" rx="0.5"/><rect x="9" y="9" width="6" height="6" rx="0.5"/></svg>
+                </button>
+                <button class="thumb-size-btn" data-size="large" onclick="setThumbnailSize('videos', 'large', this)" title="Grand">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6.5" height="14" rx="0.5"/><rect x="8.5" y="1" width="6.5" height="14" rx="0.5"/></svg>
+                </button>
+                <button class="thumb-size-btn" data-size="xlarge" onclick="setThumbnailSize('videos', 'xlarge', this)" title="Très grand">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="14" height="14" rx="1"/></svg>
+                </button>
+              </div>
+              <select id="videos-year-filter" class="select-filter" onchange="filterVideos()">
+                <option value="">Toutes les années</option>
+              </select>
+              <select id="videos-semester-filter" class="select-filter" onchange="filterVideos()">
+                <option value="">Tous les semestres</option>
+              </select>
+            </div>
+          </div>
+          <div class="content-with-filter">
+            <div class="filter-sidebar" id="video-categories-filter">
+              <h4>Cours</h4>
+              <a href="#" class="filter-item active" data-cat="all" onclick="filterVideosByCategory('all', this)">
+                <span class="filter-dot" style="background:#64748B"></span> Tous
+              </a>
+            </div>
+            <div class="content-grid videos-grid" id="videos-grid">
+              <p class="empty-state">Chargement...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ BOOKMARKS ═══ -->
+        <div class="page" id="page-bookmarks">
+          <div class="page-header">
+            <h2>Mes Favoris</h2>
+          </div>
+          <div class="bookmarks-content" id="bookmarks-content">
+            <p class="empty-state">Aucun favori pour le moment</p>
+          </div>
+        </div>
+
+        <!-- ═══ MY PROGRESS ═══ -->
+        <div class="page" id="page-my-progress">
+          <div class="page-header">
+            <h2>Ma Progression</h2>
+          </div>
+          <div class="progress-stats" id="progress-stats"></div>
+          <div class="dashboard-grid">
+            <div class="dashboard-section">
+              <h3>Lectures Récentes</h3>
+              <div class="items-list" id="my-recent-books"></div>
+            </div>
+            <div class="dashboard-section">
+              <h3>Vidéos Récentes</h3>
+              <div class="items-list" id="my-recent-videos"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ MANAGE BOOKS (ADMIN) ═══ -->
+        <div class="page" id="page-manage-books">
+          <div class="page-header">
+            <h2>Gérer les Livres</h2>
+            <div class="page-actions">
+              <button class="btn btn-primary" onclick="showAddBookModal()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Ajouter un Livre
+              </button>
+            </div>
+          </div>
+          <div class="admin-table-container">
+            <table class="admin-table" id="admin-books-table">
+              <thead>
+                <tr>
+                  <th>Titre</th>
+                  <th>Auteur</th>
+                  <th>Catégorie</th>
+                  <th>Format</th>
+                  <th>Date d'ajout</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-books-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ═══ MANAGE VIDEOS (ADMIN) ═══ -->
+        <div class="page" id="page-manage-videos">
+          <div class="page-header">
+            <h2>Gérer les Vidéos</h2>
+            <div class="page-actions">
+              <button class="btn btn-primary" onclick="showAddVideoModal()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Ajouter une Vidéo
+              </button>
+            </div>
+          </div>
+          <div class="admin-table-container">
+            <table class="admin-table" id="admin-videos-table">
+              <thead>
+                <tr>
+                  <th>Titre</th>
+                  <th>Cours</th>
+                  <th>Année</th>
+                  <th>Semestre</th>
+                  <th>Épisode</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-videos-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ═══ MANAGE USERS (ADMIN) ═══ -->
+        <div class="page" id="page-manage-users">
+          <div class="page-header">
+            <h2>Gérer les Utilisateurs</h2>
+            <div class="page-actions">
+              <button class="btn btn-primary" onclick="showAddUserModal()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nouvel Utilisateur
+              </button>
+            </div>
+          </div>
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Nom complet</th>
+                  <th>Identifiant</th>
+                  <th>Rôle</th>
+                  <th>Année d'étude</th>
+                  <th>Dernière connexion</th>
+                  <th>Statut</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ═══ MANAGE CATEGORIES (ADMIN) ═══ -->
+        <div class="page" id="page-manage-categories">
+          <div class="page-header">
+            <h2>Gérer les Catégories & Dossiers</h2>
+            <p class="page-subtitle">Organisez vos livres et cours — renommez, réordonnez, ajoutez des catégories</p>
+          </div>
+          <div class="categories-management">
+            <div class="category-section">
+              <div class="category-section-header">
+                <h3>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                  Catégories de Livres
+                </h3>
+                <button class="btn btn-sm btn-primary" onclick="showAddBookCategoryModal()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Ajouter
+                </button>
+              </div>
+              <p class="category-section-hint">Cliquez sur un nom pour le renommer directement. Glissez pour réorganiser.</p>
+              <div class="categories-list" id="book-categories-list"></div>
+            </div>
+            <div class="category-section">
+              <div class="category-section-header">
+                <h3>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                  Catégories de Cours (Vidéos)
+                </h3>
+                <button class="btn btn-sm btn-primary" onclick="showAddCourseCategoryModal()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Ajouter
+                </button>
+              </div>
+              <p class="category-section-hint">Cliquez sur un nom pour le renommer. Utilisez les boutons pour modifier les détails.</p>
+              <div class="categories-list" id="course-categories-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ BACKUP & RESTORE (ADMIN) ═══ -->
+        <div class="page" id="page-backup-restore">
+          <div class="page-header">
+            <h2>Sauvegarde & Restauration</h2>
+            <p class="page-subtitle">Créez des sauvegardes complètes et restaurez vos données sur n'importe quelle machine</p>
+          </div>
+
+          <div class="backup-section">
+            <div class="backup-actions-row">
+              <div class="backup-action-card">
+                <div class="backup-action-icon" style="background: rgba(34,197,94,0.12); color: #22c55e;">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <h3>Créer une sauvegarde</h3>
+                <p>Sauvegarde la base de données, tous les livres, vidéos, vignettes et métadonnées.</p>
+                <button class="btn btn-primary" id="btn-create-backup" onclick="createBackup()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                  Sauvegarder maintenant
+                </button>
+              </div>
+              <div class="backup-action-card">
+                <div class="backup-action-icon" style="background: rgba(99,102,241,0.12); color: #6366f1;">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                </div>
+                <h3>Restaurer depuis un dossier</h3>
+                <p>Sélectionnez un dossier de sauvegarde pour restaurer toutes les données et fichiers.</p>
+                <button class="btn btn-secondary" onclick="restoreFromFolder()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                  Parcourir...
+                </button>
+              </div>
+            </div>
+
+            <div class="backup-info-box">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <div>
+                <strong>Migration vers un nouvel ordinateur :</strong> Copiez le dossier <code>Documents/Bibliothèque</code> vers le nouvel ordinateur. Après installation du logiciel, utilisez « Restaurer depuis un dossier » en sélectionnant un dossier de sauvegarde dans <code>Bibliothèque/Sauvegarde</code>.
+              </div>
+            </div>
+
+            <h3 style="margin-top:28px; margin-bottom:14px;">Sauvegardes existantes</h3>
+            <div id="backup-list" class="backup-list">
+              <p class="empty-state">Chargement...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ SETTINGS (ADMIN) ═══ -->
+        <div class="page" id="page-settings">
+          <div class="page-header">
+            <h2>Paramètres de l'Établissement</h2>
+            <p class="page-subtitle">Personnalisez l'identité visuelle, les années académiques et les niveaux d'études</p>
+          </div>
+
+          <div class="settings-grid">
+            <!-- Identity Section -->
+            <div class="settings-section">
+              <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                Identité de l'Établissement
+              </h3>
+              <div class="form-group">
+                <label>Nom officiel de l'institut</label>
+                <input type="text" id="setting-institute-name" placeholder="Ex: Institut Supérieur Biblique">
+              </div>
+              <div class="form-group">
+                <label>Sigle / Acronyme</label>
+                <input type="text" id="setting-institute-acronym" placeholder="Ex: ISB" maxlength="10">
+              </div>
+              <div class="form-group">
+                <label>Logo de l'établissement</label>
+                <div class="logo-upload-area">
+                  <div class="logo-preview" id="settings-logo-preview">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <span>Aucun logo</span>
+                  </div>
+                  <div class="logo-upload-actions">
+                    <button class="btn btn-sm btn-primary" onclick="uploadInstituteLogo()">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      Importer un logo
+                    </button>
+                    <button class="btn btn-sm btn-secondary" onclick="removeInstituteLogo()">Supprimer</button>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Message de la page de connexion</label>
+                <textarea id="setting-login-message" rows="3" placeholder="Citation, verset ou message d'accueil..."></textarea>
+              </div>
+            </div>
+
+            <!-- Academic Config Section -->
+            <div class="settings-section">
+              <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5"/></svg>
+                Configuration Académique
+              </h3>
+              <div class="form-group">
+                <label>Années académiques <small>(une par ligne)</small></label>
+                <textarea id="setting-academic-years" rows="6" placeholder="1ère Année&#10;2ème Année&#10;3ème Année..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>Semestres <small>(un par ligne)</small></label>
+                <textarea id="setting-semesters" rows="3" placeholder="Semestre 1&#10;Semestre 2"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Niveaux d'études / Classes <small>(un par ligne)</small></label>
+                <textarea id="setting-study-levels" rows="6" placeholder="1ère Année&#10;2ème Année&#10;Master..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kiosk & Security Section -->
+          <div class="settings-section settings-section-full">
+            <h3>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Sécurité & Mode Kiosque
+            </h3>
+            <p class="settings-section-desc">Transformez le logiciel en plateforme sécurisée. Seul l'administrateur pourra quitter le mode kiosque, fermer l'application ou accéder au bureau du système.</p>
+
+            <div class="kiosk-options">
+              <label class="kiosk-toggle">
+                <input type="checkbox" id="setting-auto-start" onchange="toggleAutoStart(this.checked)">
+                <div class="kiosk-toggle-info">
+                  <span class="kiosk-toggle-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+                    Lancement automatique au démarrage
+                  </span>
+                  <span class="kiosk-toggle-desc">Le logiciel se lance automatiquement lorsque l'ordinateur démarre.</span>
+                </div>
+              </label>
+
+              <label class="kiosk-toggle">
+                <input type="checkbox" id="setting-kiosk-mode" onchange="toggleKioskSetting(this.checked)">
+                <div class="kiosk-toggle-info">
+                  <span class="kiosk-toggle-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    Mode plein écran (Kiosque)
+                  </span>
+                  <span class="kiosk-toggle-desc">L'application s'ouvre en plein écran immersif. Les étudiants ne peuvent pas réduire ou fermer la fenêtre.</span>
+                </div>
+              </label>
+
+              <label class="kiosk-toggle">
+                <input type="checkbox" id="setting-restrict-os" onchange="toggleRestrictOS(this.checked)">
+                <div class="kiosk-toggle-info">
+                  <span class="kiosk-toggle-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Restreindre l'accès au système
+                  </span>
+                  <span class="kiosk-toggle-desc">Bloque Alt+Tab, Alt+F4 et autres raccourcis clavier pour empêcher l'accès au bureau. Seul l'administrateur peut désactiver cette option.</span>
+                </div>
+              </label>
+            </div>
+
+            <div class="kiosk-warning" id="kiosk-warning" style="display:none">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <div>
+                <strong>Attention :</strong> En mode kiosque avec restriction système, les étudiants ne pourront plus accéder au bureau ni à aucun autre logiciel. Assurez-vous de conserver vos identifiants administrateur. Le mode kiosque s'active au prochain démarrage de l'application.
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-actions">
+            <button class="btn btn-primary btn-lg" onclick="saveAllSettings()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Enregistrer les paramètres
+            </button>
+          </div>
+
+          <div class="settings-about">
+            <div class="about-brand">
+              <span class="about-system">ELIKIA INSTITUT</span>
+              <span class="about-version">v1.0.0 — Bibliothèque Numérique</span>
+            </div>
+            <div class="about-creator">
+              Créé par <strong>ELIKIA MEDIA</strong> BY <strong>PRINCE NGATSONI</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ APPLICATIONS ═══ -->
+        <div class="page" id="page-applications">
+          <div class="page-header">
+            <h2>Applications</h2>
+            <p class="page-subtitle">Lancez vos applications directement depuis l'environnement ELIKIA INSTITUT</p>
+          </div>
+          <div class="apps-toolbar">
+            <div class="search-bar">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="apps-search" placeholder="Rechercher une application..." oninput="filterApps()">
+            </div>
+            <select id="apps-category-filter" class="select-filter" onchange="filterApps()">
+              <option value="">Toutes les catégories</option>
+            </select>
+          </div>
+          <div class="apps-grid" id="apps-grid">
+            <p class="empty-state">Chargement...</p>
+          </div>
+        </div>
+
+        <!-- ═══ MANAGE APPLICATIONS (ADMIN) ═══ -->
+        <div class="page" id="page-manage-apps">
+          <div class="page-header">
+            <h2>Gérer les Applications</h2>
+            <p class="page-subtitle">Installez, modifiez ou supprimez les applications disponibles</p>
+          </div>
+          <div class="content-actions">
+            <button class="btn btn-primary" onclick="showInstallAppModal()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Installer une application
+            </button>
+          </div>
+          <div class="admin-table-container">
+            <table class="admin-table" id="admin-apps-table">
+              <thead>
+                <tr>
+                  <th>Application</th>
+                  <th>Type</th>
+                  <th>Catégorie</th>
+                  <th>Lancements</th>
+                  <th>Visibilité</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-apps-tbody">
+                <tr><td colspan="6" class="empty-state">Chargement...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ═══ BOOK READER ═══ -->
+        <div class="page" id="page-book-reader">
+          <div class="reader-toolbar">
+            <div class="reader-toolbar-left">
+              <button class="btn btn-ghost btn-sm" onclick="closeReader()" title="Retour à la bibliothèque">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Retour
+              </button>
+              <span class="reader-title" id="reader-title">Document</span>
+            </div>
+            <div class="reader-toolbar-center" id="reader-pdf-controls">
+              <button class="btn-icon" onclick="readerPrevPage()" title="Page précédente">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <span class="reader-page-info">
+                <input type="number" id="reader-current-page" value="1" min="1" onchange="readerGoToPage(this.value)" class="reader-page-input"> / <span id="reader-total-pages">1</span>
+              </span>
+              <button class="btn-icon" onclick="readerNextPage()" title="Page suivante">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+              <div class="reader-separator"></div>
+              <button class="btn-icon" onclick="readerZoomOut()" title="Zoom -">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+              </button>
+              <span class="reader-zoom-info" id="reader-zoom-info">120%</span>
+              <button class="btn-icon" onclick="readerZoomIn()" title="Zoom +">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+              </button>
+              <button class="btn-icon" onclick="readerFitWidth()" title="Ajuster à la largeur">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 3H3v18h18V3z"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
+              </button>
+              <div class="reader-separator"></div>
+              <button class="btn-icon" onclick="readerToggleMode()" id="reader-mode-btn" title="Mode continu / page unique">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="1"/><rect x="2" y="14" width="20" height="8" rx="1"/></svg>
+              </button>
+            </div>
+            <div class="reader-toolbar-right">
+              <!-- Text reading options (for TXT mode) -->
+              <div id="reader-text-options" style="display:none">
+                <select id="reader-font-size" class="select-filter" onchange="readerChangeFontSize(this.value)" title="Taille de police">
+                  <option value="14">14px</option>
+                  <option value="16" selected>16px</option>
+                  <option value="18">18px</option>
+                  <option value="20">20px</option>
+                  <option value="24">24px</option>
+                  <option value="28">28px</option>
+                </select>
+                <select id="reader-theme" class="select-filter" onchange="readerChangeTheme(this.value)" title="Thème de lecture">
+                  <option value="dark">Sombre</option>
+                  <option value="light">Clair</option>
+                  <option value="sepia">Sépia</option>
+                </select>
+              </div>
+              <button class="btn-icon" onclick="readerToggleFullscreen()" title="Plein écran">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+              </button>
+              <button class="btn-icon" onclick="readerToggleBookmark()" id="reader-bookmark-btn" title="Favori">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              </button>
+              <button class="btn-icon" onclick="readerOpenExternal()" title="Ouvrir dans l'app par défaut">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="reader-viewport" id="reader-viewport">
+            <div class="reader-loading" id="reader-loading">
+              <div class="loader"></div>
+              <span>Chargement du document...</span>
+            </div>
+            <div class="reader-canvas-container" id="reader-canvas-container"></div>
+            <div class="reader-text-content" id="reader-text-content" style="display:none"></div>
+            <div class="reader-unsupported" id="reader-unsupported" style="display:none">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <h3 id="unsupported-title">Format non pris en charge dans le lecteur intégré</h3>
+              <p id="unsupported-message">Ce document sera ouvert avec votre application par défaut.</p>
+              <div style="display:flex;gap:10px;margin-top:8px">
+                <button class="btn btn-secondary" onclick="closeReader()">Retour</button>
+                <button class="btn btn-primary" onclick="readerOpenExternal()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  Ouvrir avec l'app par défaut
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ VIDEO PLAYER (ENHANCED) ═══ -->
+        <div class="page" id="page-video-player">
+          <div class="player-toolbar">
+            <div class="player-toolbar-left">
+              <button class="btn btn-ghost btn-sm" onclick="closeVideoPlayer()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Retour
+              </button>
+              <span class="reader-title" id="player-title">Lecture vidéo</span>
+            </div>
+            <div class="player-toolbar-right">
+              <span class="player-format-badge" id="player-format-badge">MP4</span>
+              <button class="btn-icon" onclick="toggleVideoBookmark()" id="video-bookmark-btn" title="Favori">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="player-content">
+            <div class="player-video-wrapper">
+              <video id="video-player" controls controlsList="nodownload">
+                Votre navigateur ne supporte pas la lecture vidéo.
+              </video>
+              <div class="player-resume-overlay" id="player-resume-overlay" style="display:none">
+                <div class="resume-card">
+                  <p>Reprendre à <strong id="resume-time-display">00:00</strong> ?</p>
+                  <div class="resume-actions">
+                    <button class="btn btn-secondary btn-sm" onclick="startVideoFromBeginning()">Depuis le début</button>
+                    <button class="btn btn-primary btn-sm" onclick="resumeVideo()">Reprendre</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="player-sidebar">
+              <div class="player-info-card" id="video-info-panel">
+                <!-- Dynamically filled -->
+              </div>
+              <div class="player-playlist" id="player-playlist" style="display:none">
+                <h4>Autres épisodes</h4>
+                <div class="playlist-items" id="playlist-items"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ═══════ MODAL OVERLAY ═══════ -->
+  <div id="modal-overlay" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal" id="modal-content" onclick="event.stopPropagation()">
+      <!-- Dynamic content -->
+    </div>
+  </div>
+
+  <!-- ═══════ TOAST NOTIFICATIONS ═══════ -->
+  <div id="toast-container"></div>
+
+  <script src="js/pdf.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdf.worker.js';
+  </script>
+  <script src="js/renderer.js"></script>
+</body>
+</html>
