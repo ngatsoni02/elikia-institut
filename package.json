@@ -1,7 +1,7 @@
 {
-  "name": "isb-bibliotheque-numerique",
+  "name": "elikia-institut",
   "version": "1.0.0",
-  "description": "Bibliothèque Numérique - Institut Supérieur Biblique",
+  "description": "ELIKIA INSTITUT - Bibliothèque Numérique par ELIKIA MEDIA BY PRINCE NGATSONI",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -11,7 +11,7 @@
     "build:mac": "electron-builder --mac",
     "build:linux": "electron-builder --linux"
   },
-  "author": "Institut Supérieur Biblique",
+  "author": "ELIKIA MEDIA BY PRINCE NGATSONI",
   "license": "PROPRIETARY",
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -24,8 +24,8 @@
     "electron-builder": "^25.1.8"
   },
   "build": {
-    "appId": "org.isb.bibliotheque",
-    "productName": "ISB Bibliothèque Numérique",
+    "appId": "com.elikia-media.institut",
+    "productName": "ELIKIA INSTITUT",
     "directories": {
       "output": "dist"
     },
@@ -43,17 +43,15 @@
           "arch": ["x64"]
         }
       ],
-      "icon": "assets/icon.ico"
+      "signAndEditExecutable": false,
+      "sign": null
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "installerIcon": "assets/icon.ico",
-      "uninstallerIcon": "assets/icon.ico",
-      "installerHeaderIcon": "assets/icon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "ISB Bibliothèque"
+      "shortcutName": "ELIKIA INSTITUT"
     },
     "mac": {
       "target": [
@@ -62,7 +60,6 @@
           "arch": ["x64", "arm64"]
         }
       ],
-      "icon": "assets/icon.icns",
       "category": "public.app-category.education"
     },
     "linux": {
@@ -76,7 +73,6 @@
           "arch": ["x64"]
         }
       ],
-      "icon": "assets/icon.png",
       "category": "Education"
     }
   }
